@@ -108,7 +108,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0730;
-				ORGANIZATIONNAME = cinnamon;
+				ORGANIZATIONNAME = wegie;
 				TargetAttributes = {
 					42F79C601CC34F1F00F751FD = {
 						CreatedOnToolsVersion = 7.3;
@@ -258,7 +258,7 @@
 				INFOPLIST_FILE = Promise/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.cinnamon.Promise;
+				PRODUCT_BUNDLE_IDENTIFIER = org.wegie.Promise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -276,7 +276,7 @@
 				INFOPLIST_FILE = Promise/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.cinnamon.Promise;
+				PRODUCT_BUNDLE_IDENTIFIER = org.wegie.Promise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
