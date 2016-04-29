@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.license      = "MIT"
   s.author       = "wegie"
   s.platform     = :ios, "8.0"
-  s.source       = { :git => "https://github.com/wegie/Promise.git", :tag => s.version }
-  s.source_files  = "Promise/**/*.swift"
+  s.source       = { :git => "https://github.com/wegie/Promise.git", :tag => s.version.to_s }
+  s.source_files = "Promise/**/*.swift"
   s.requires_arc = true
 end
