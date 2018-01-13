@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		42F79C651CC34F1F00F751FD /* Promise.h in Headers */ = {isa = PBXBuildFile; fileRef = 42F79C641CC34F1F00F751FD /* Promise.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		42F79C6E1CC34F3500F751FD /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F79C6D1CC34F3500F751FD /* Promise.swift */; };
-		42F79C701CCB3F4800F751FD /* Handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F79C6F1CCB3F4800F751FD /* Handlers.swift */; };
-		42F79C721CCB3F9100F751FD /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42F79C711CCB3F9100F751FD /* State.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,8 +16,6 @@
 		42F79C641CC34F1F00F751FD /* Promise.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Promise.h; sourceTree = "<group>"; };
 		42F79C661CC34F1F00F751FD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		42F79C6D1CC34F3500F751FD /* Promise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
-		42F79C6F1CCB3F4800F751FD /* Handlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Handlers.swift; sourceTree = "<group>"; };
-		42F79C711CCB3F9100F751FD /* State.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,8 +58,6 @@
 		42F79C6C1CC34F2C00F751FD /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				42F79C6F1CCB3F4800F751FD /* Handlers.swift */,
-				42F79C711CCB3F9100F751FD /* State.swift */,
 				42F79C6D1CC34F3500F751FD /* Promise.swift */,
 			);
 			path = Classes;
@@ -147,9 +141,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				42F79C701CCB3F4800F751FD /* Handlers.swift in Sources */,
 				42F79C6E1CC34F3500F751FD /* Promise.swift in Sources */,
-				42F79C721CCB3F9100F751FD /* State.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,6 +191,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -240,6 +233,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";

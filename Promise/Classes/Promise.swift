@@ -8,35 +8,46 @@
 
 import Foundation
 
-public class Promise<T> {
+public typealias Handler<T> = (T) -> Void
+public typealias ErrorHandler = (Error) -> Void
+
+public final class Promise<T> {
+
+    fileprivate typealias Handlers<T> = [Handler<T>]
+
+    fileprivate enum State<T> {
+        case pending(Handlers<State<T>>)
+        case fullfilled(T)
+        case rejected(Error)
+    }
 
     private var lock: NSRecursiveLock = NSRecursiveLock()
 
-    private var state: State<T> = .Pending(Handlers()) {
+    private var state: State<T> = .pending(Handlers()) {
         didSet {
-            if case .Pending(let handlers) = oldValue {
+            if case .pending(let handlers) = oldValue {
                 handlers.forEach { handler in handler(self.state) }
             }
         }
     }
 
-    private lazy var resolve: T -> Void = { value in
+    private lazy var resolve: Handler<T> = { value in
         self.lock.lock()
-        if case .Pending = self.state {
-            self.state = .Fullfilled(value)
+        if case .pending = self.state {
+            self.state = .fullfilled(value)
         }
         self.lock.unlock()
     }
 
-    private lazy var reject: ErrorType -> Void = { error in
+    private lazy var reject: ErrorHandler = { error in
         self.lock.lock()
-        if case .Pending = self.state {
-            self.state = .Rejected(error)
+        if case .pending = self.state {
+            self.state = .rejected(error)
         }
         self.lock.unlock()
     }
 
-    public init(@noescape _ executor: (T -> Void, ErrorType -> Void) throws -> Void) {
+    public init(_ executor: (@escaping Handler<T>, @escaping ErrorHandler) throws -> Void) {
         do {
             try executor(resolve, reject)
         } catch {
@@ -48,62 +59,62 @@ public class Promise<T> {
 
 extension Promise {
 
-    public func then(onFullfilled: T -> Void) -> Promise<T> {
-        return then(onFullfilled) { _ in }
+    public func then(_ onfullfilled: @escaping Handler<T>) -> Promise<T> {
+        return then(onfullfilled) { _ in }
     }
 
-    public func then(onFullfilled: T -> Void, _ onRejected: ErrorType -> Void) -> Promise<T> {
+    public func then(_ onfullfilled: @escaping Handler<T>, _ onrejected: @escaping ErrorHandler) -> Promise<T> {
         return Promise<T>(when: self) { state, resolve, reject in
             switch state {
-            case .Fullfilled(let value):
-                onFullfilled(value)
+            case .fullfilled(let value):
+                onfullfilled(value)
                 resolve(value)
-            case .Rejected(let error):
-                onRejected(error)
+            case .rejected(let error):
+                onrejected(error)
                 reject(error)
             default: ()
             }
         }
     }
 
-    public func then<U>(onFullfilled: T -> U) -> Promise<U> {
-        return then(onFullfilled) { _ in }
+    public func then<U>(_ onfullfilled: @escaping (T) -> U) -> Promise<U> {
+        return then(onfullfilled) { _ in }
     }
 
-    public func then<U>(onFullfilled: T -> U, _ onRejected: ErrorType -> Void) -> Promise<U> {
+    public func then<U>(_ onfullfilled: @escaping (T) -> U, _ onrejected: @escaping ErrorHandler) -> Promise<U> {
         return Promise<U>(when: self) { state, resolve, reject in
             switch state {
-            case .Fullfilled(let value):
-                let newValue = onFullfilled(value)
+            case .fullfilled(let value):
+                let newValue = onfullfilled(value)
                 resolve(newValue)
-            case .Rejected(let error):
-                onRejected(error)
+            case .rejected(let error):
+                onrejected(error)
                 reject(error)
             default: ()
             }
         }
     }
 
-    public func then<U>(onFullfilled: T -> Promise<U>) -> Promise<U> {
-        return then(onFullfilled) { _ in }
+    public func then<U>(_ onfullfilled: @escaping (T) -> Promise<U>) -> Promise<U> {
+        return then(onfullfilled) { _ in }
     }
 
-    public func then<U>(onFullfilled: T -> Promise<U>, _ onRejected: ErrorType -> Void) -> Promise<U> {
+    public func then<U>(_ onfullfilled: @escaping (T) -> Promise<U>, _ onrejected: @escaping ErrorHandler) -> Promise<U> {
         return Promise<U>(when: self) { state, resolve, reject in
             switch state {
-            case .Fullfilled(let value):
-                let newValue = onFullfilled(value)
+            case .fullfilled(let value):
+                let newValue = onfullfilled(value)
                 newValue.at { state in
                     switch state {
-                    case .Fullfilled(let value):
+                    case .fullfilled(let value):
                         resolve(value)
-                    case .Rejected(let error):
+                    case .rejected(let error):
                         reject(error)
                     default: ()
                     }
                 }
-            case .Rejected(let error):
-                onRejected(error)
+            case .rejected(let error):
+                onrejected(error)
                 reject(error)
             default: ()
             }
@@ -114,15 +125,15 @@ extension Promise {
 
 extension Promise {
 
-    public func `catch`(onRejected: ErrorType -> Void) -> Promise<T> {
-        return then({ _ in }, onRejected)
+    public func `catch`(onrejected: @escaping ErrorHandler) -> Promise<T> {
+        return then({ _ in }, onrejected)
     }
 
 }
 
 extension Promise {
 
-    public func always(on: () -> Void) -> Promise<T> {
+    public func always(on: @escaping () -> Void) -> Promise<T> {
         return then({ _ in on() }, { _ in on() })
     }
 
@@ -136,7 +147,7 @@ extension Promise {
         }
     }
 
-    public static func reject(error: ErrorType) -> Promise<T> {
+    public static func reject(error: Error) -> Promise<T> {
         return Promise<T> { resolve, reject in
             reject(error)
         }
@@ -144,7 +155,7 @@ extension Promise {
 
     public static func race(promises: Promise<T>...) -> Promise<T> {
         return Promise<T> { resolve, reject in
-            promises.forEach { $0.then({ resolve($0) }, reject) }
+            promises.forEach { _ = $0.then({ resolve($0) }, reject) }
         }
     }
 
@@ -152,7 +163,7 @@ extension Promise {
 
 extension Promise {
 
-    private convenience init<U>(when: Promise<U>, _ executor: (State<U>, T -> Void, ErrorType -> Void) -> Void) {
+    private convenience init<U>(when: Promise<U>, _ executor: @escaping (Promise<U>.State<U>, @escaping Handler<T>, @escaping ErrorHandler) -> Void) {
         self.init { resolve, reject in
             when.at { state in
                 executor(state, resolve, reject)
@@ -160,12 +171,12 @@ extension Promise {
         }
     }
 
-    private func at(handler: State<T> -> Void) {
+    private func at(handler: @escaping (State<T>) -> Void) {
         self.lock.lock()
         switch state {
-        case .Pending(let handlers):
+        case .pending(var handlers):
             handlers.append(handler)
-        case .Fullfilled, .Rejected:
+        case .fullfilled, .rejected:
             handler(state)
         }
         self.lock.unlock()
